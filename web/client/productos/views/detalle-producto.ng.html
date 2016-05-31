@@ -1,0 +1,72 @@
+<form  class="form-horizontal">
+  <fieldset>
+
+    <!-- Form Name -->
+    <legend>Modificar Producto</legend>
+
+    <!-- Código-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="CodigoInput">*Códido</label>
+      <div class="col-md-4">
+        <input ng-model="producto.Codigo" id="CodigoInput" name="CodigoInput" type="text" placeholder="123456789" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Descripción-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="DescripcionInput">*Descripción</label>
+      <div class="col-md-4">
+        <input ng-model="producto.Descripcion" id="DescripcionInput" name="DescripcionInput" type="text" placeholder="Descripción del nuevo producto" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Stock-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="StockInput">*Stock</label>
+      <div class="col-md-4">
+        <input ng-model="producto.Stock" id="StockInput" name="StockInput" type="number" placeholder="99" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Iva-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="IvaInput">*Iva</label>
+      <div class="col-md-4">
+        <input ng-model="producto.Iva" id="IvaInput" name="IvaInput" type="number" placeholder="0" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Venta-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="VentaInput">*venta</label>
+      <div class="col-md-4">
+        <input ng-model="producto.Venta" id="VentaInput" name="VentaInput" type="number" placeholder="0" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Costo-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="CostoInput">*Costo</label>
+      <div class="col-md-4">
+        <input ng-model="producto.Costo" id="CostoInput" name="CostoInput" type="number" placeholder="0" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Button (Double) -->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="button1id"></label>
+      <div class="col-md-8">
+        <button ng-click="guardar();" id="button1id" name="button1id" class="btn btn-primary">Guardar Cambios</button>
+        <button ng-click="restaurar();" id="button2id" name="button2id" class="btn btn-default-inverse">Restaurar</button>
+      </div>
+    </div>
+
+  </fieldset>
+</form>
+
+<ul>
+  Users:
+  <li ng-repeat="user in users">
+    <div>{{ user.emails[0].address }}</div>
+  </li>
+</ul>

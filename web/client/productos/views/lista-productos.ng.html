@@ -1,0 +1,108 @@
+<!-- Formulario para agregar productos -->
+<form  ng-submit="nuevoProducto.propietario = $root.currentUser._id; productos.save(nuevoProducto);" class="form-horizontal">
+  <fieldset>
+
+    <!-- Form Name -->
+    <legend>Agregar Producto</legend>
+
+    <!-- Código-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="CodigoInput">*Códido</label>
+      <div class="col-md-4">
+        <input ng-model="nuevoProducto.Codigo" id="CodigoInput" name="CodigoInput" type="text" placeholder="123456789" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Descripción-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="DescripcionInput">*Descripción</label>
+      <div class="col-md-4">
+        <input ng-model="nuevoProducto.Descripcion" id="DescripcionInput" name="DescripcionInput" type="text" placeholder="Descripción del nuevo producto" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Stock-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="StockInput">*Stock</label>
+      <div class="col-md-4">
+        <input ng-model="nuevoProducto.Stock" id="StockInput" name="StockInput" type="number" placeholder="99" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Iva-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="IvaInput">*Iva</label>
+      <div class="col-md-4">
+        <input ng-model="nuevoProducto.Iva" id="IvaInput" name="IvaInput" type="number" placeholder="0" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Venta-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="VentaInput">*venta</label>
+      <div class="col-md-4">
+        <input ng-model="nuevoProducto.Venta" id="VentaInput" name="VentaInput" type="number" placeholder="0" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Costo-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="CostoInput">*Costo</label>
+      <div class="col-md-4">
+        <input ng-model="nuevoProducto.Costo" id="CostoInput" name="CostoInput" type="number" placeholder="0" class="form-control input-md" required>
+      </div>
+    </div>
+
+    <!-- Crear Producto-->
+    <div class="form-group">
+      <label class="col-md-4 control-label" for="CrearProductoSubmit"></label>
+      <div class="col-md-4">
+        <input id="CrearProductoSubmit" name="CrearProductoSubmit" type="submit" class="form-control btn btn-primary" value="Crear Producto" required>
+      </div>
+    </div>
+
+  </fieldset>
+</form>
+
+<!-- Filtros -->
+<div>
+    <select ng-model="ordenDePropiedad">
+      <option value="1">Ascending</option>
+      <option value="-1">Descending</option>
+    </select>
+  </div>
+
+
+<div class="panel panel-primary">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h5>MIS PRODUCTOS</h5></div>
+
+  <!-- Table -->
+  <div class="table-responsive">
+    <table class="table table-condensed table-stripped">
+      <thead>
+        <td>Item</td>
+        <td>Código</td>
+        <td>Descripción</td>
+        <td>Stock</td>
+        <td>Iva</td>
+        <td>Venta</td>
+        <td>Costo</td>
+        <td></td>
+      </thead>
+      <!-- <li dir-paginate="party in parties | itemsPerPage: perPage" total-items="partiesCount.count"> -->
+
+      <tbody dir-paginate="producto in productos | itemsPerPage: porPagina" total-items="cantidadDeProductos.count">
+        <td>{{$index}}</td>
+        <td><a href="/productos/{{producto._id}}">{{producto.Codigo}}</a></td>
+        <td> {{producto.Descripcion}}</td>
+        <td> {{producto.Stock}}</td>
+        <td> {{producto.Iva}}</td>
+        <td> {{producto.Venta}}</td>
+        <td> {{producto.Costo}}</td>
+        <td><button ng-click="remove(producto)" type="button" class="btn btn-danger btn-sm">X</button></td>
+      </tbody>
+    </table>
+  </div>
+</div>
+<dir-pagination-controls on-page-change="paginaCambiada(newPageNumber)"></dir-pagination-controls>
