@@ -16,13 +16,9 @@ standard-minifiers      # JS/CSS minifiers run for production mode
 es5-shim                # ECMAScript 5 compatibility for older browsers.
 ecmascript              # Enable ECMAScript2015+ syntax in app code
 
-angular
 twbs:bootstrap
-angularui:angular-ui-bootstrap
-less
-angularui:angular-ui-router
-accounts-password
-accounts-ui
-urigo:angular-blaze-template
-angularutils:pagination
-tmeasday:publish-counts
+check
+kadira:flow-router
+kadira:blaze-layout
+underscore
+themeteorchef:jquery-validation

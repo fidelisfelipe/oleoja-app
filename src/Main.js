@@ -3,7 +3,6 @@ var {Text, View, Modal, TouchableHighlight, AsyncStorage} = require('react-nativ
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var SideMenu = require('react-native-side-menu');
 
-import WebSocket from './components/WebSocket';
 import Menu from './components/Menu';
 import Location from './Location';
 

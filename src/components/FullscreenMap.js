@@ -1,33 +1,50 @@
 var React = require('react');
-var {Text, View, MapView, Dimensions} = require('react-native');
+var {Text, View, MapView, Dimensions, ListView} = require('react-native');
 var MapView = require('react-native-maps');
 var WebSocket = require('./WebSocket')
+var _ = require('lodash');
+
+import DDPClient from 'ddp-client';
 
 class Map extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      dataSource: {},
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => !_.isEqual(row1, row2),
+      }),
       loaded: false,
     }
-    this.handleRegionChange = this.handleRegionChange.bind(this)
+    //this.handleRegionChange = this.handleRegionChange.bind(this)
   }
 
   componentDidMount() {
-    WebSocket.subscribe('drivers');
+    var ddpClient = new DDPClient({url: 'ws://localhost:3000/websocket'});
 
-    var observer = WebSocket.observe('drivers');
-        observer.added = () => this.updateDrivers(_.cloneDeep(_.values(WebSocket.collections.drivers)));
-        observer.changed = () => this.updateDrivers(_.cloneDeep(_.values(WebSocket.collections.drivers)));
-        observer.removed = () => this.updateDrivers(_.cloneDeep(_.values(WebSocket.collections.drivers)));
+    ddpClient.connect(() => ddpClient.subscribe('drivers'));
+    console.log(ddpClient.collections.drivers);
+    // observe the lists collection
+    var observer = ddpClient.observe('drivers');
+    observer.added = () => this.updateRows(_.cloneDeep(_.values(ddpClient.collections.drivers)));
+    observer.changed = () => this.updateRows(_.cloneDeep(_.values(ddpClient.collections.drivers)));
+    observer.removed = () => this.updateRows(_.cloneDeep(_.values(ddpClient.collections.drivers)));
   }
 
-  updateDrivers: function(rows) {
+  updateRows(rows) {
     console.log(rows)
     this.setState({
       drivers: rows,
       loaded: true,
     });
+  }
+
+  renderDriver(driver) {
+    return (
+      <View style={styles.container}>
+        <Text>{driver.name}</Text>
+        <Text>{driver.email}</Text>
+      </View>
+    )
   }
 
   render() {
@@ -49,6 +66,10 @@ class Map extends React.Component {
     }
     return (
       <View style={style}>
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this.renderDriver}
+      />
         <MapView style={mapStyle}
           //onRegionChange={this.handleRegionChange}
           //minDelta={0.001}

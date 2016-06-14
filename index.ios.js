@@ -1,21 +1,20 @@
 var React = require('react');
-var {AppRegistry, View, Navigator, Dimensions, AsyncStorage} = require('react-native');
-var Routes = require('./src/components/Routes');
 var Spinner = require('react-native-spinkit');
+var {AppRegistry, View, Navigator, Dimensions, AsyncStorage} = require('react-native');
 
-import Main from './src/Main'
+import WebSocket from './src/components/WebSocket';
+import Routes from './src/components/Routes'
 import Signin from './src/Signin'
 import Signup from './src/Signup'
 import Forget from './src/Forget'
-
-import WebSocket from './src/components/WebSocket';
+import Main from './src/Main'
 
 class Index extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
     	connected: false,
-    	loggedIn: null,
+    	loggedIn: false,
     	loaded: false,
     	user: {},
     	initialRoute: null
@@ -29,9 +28,11 @@ class Index extends React.Component {
       this.setState({ connected: connected });
     });
 
+    /*
+     *  Retornar initialRoute padrao para [1]
+     */
 		setTimeout(() => { 
     	AsyncStorage.getItem('user').then((response) => {
-    		console.log(response);
 	      if (response) {
 	      	let user = JSON.parse(response);
 		      this.setState({
@@ -43,7 +44,7 @@ class Index extends React.Component {
 	      } else {
 	 	      this.setState({
 		        loggedIn: null,
-		        initialRoute: Routes.Stack[1],
+		        initialRoute: Routes.Stack[0],
 		        loaded: true,
 		        user: null
 	  	    })
