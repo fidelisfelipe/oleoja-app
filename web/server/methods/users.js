@@ -1,5 +1,3 @@
-var iugu = require('iugu')('c73d49f9-6490-46ee-ba36-dcf69f6334fd');
-
 Meteor.methods({
 	addUser : function(user) {
 		check(payment, {
@@ -8,7 +6,7 @@ Meteor.methods({
 			profile: Object
 		});
 
-		iugu.customer.create({
+		IugiApi.customers().create({
 			email: user.email,
 			name: user.name,
 			notes: 'Public User'
