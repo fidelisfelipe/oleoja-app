@@ -1,20 +1,7 @@
 import DDPClient from 'ddp-client';
 import { AsyncStorage } from 'react-native';
 
-var WebSocket = new DDPClient({url: 'ws://127.0.0.1:3000/websocket'});
-
-/*
-new DDPClient({
-  host : "localhost",
-  port : 3000,
-  ssl  : false,
-  autoReconnect : true,
-  autoReconnectTimer : 500,
-  maintainCollections : true,
-  ddpVersion : '1',
-  url: 'wss://localhost/websocket'
-})
-*/
+var WebSocket = new DDPClient({url: 'ws://localhost:3000/websocket'});
 
 WebSocket.getUser = (id, cb) => {
   return WebSocket.call("getUser", [id], cb)
