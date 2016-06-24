@@ -44,7 +44,7 @@ class Index extends React.Component {
 	      } else {
 	 	      this.setState({
 		        loggedIn: null,
-		        initialRoute: Routes.Stack[0],
+		        initialRoute: Routes.Stack[1],
 		        loaded: true,
 		        user: null
 	  	    })
