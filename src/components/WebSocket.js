@@ -7,13 +7,8 @@ WebSocket.getUser = (id, cb) => {
   return WebSocket.call("getUser", [id], cb)
 }
 
-WebSocket.signUpWithEmail = (email, password, cb) => {
-  let params = {
-    email: email,
-    password: password
-  };
-
-  return WebSocket.call('createUser', [params], cb);
+WebSocket.signUpWithEmail = (params, cb) => {
+  return WebSocket.call('saveUser', [params], cb);
 };
 
 WebSocket.loginWithEmail = (email, password, cb) => {

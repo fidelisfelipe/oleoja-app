@@ -1,16 +1,52 @@
 var React = require('react');
 var {StyleSheet, View, Navigator, Text, TextInput, Image, Dimensions, TouchableHighlight} = require('react-native');
 var Icon = require('react-native-vector-icons/MaterialIcons');
-var Routes = require('./components/Routes')
+var Util = require('lodash');
+var Routes = require('./components/Routes');
 
-import ModalPicker from 'react-native-modal-picker'
+import ModalPicker from 'react-native-modal-picker';
+import WebSocket from './components/WebSocket';
 
 class Signup extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      initialRoute: Steps.User
+      initialRoute: Steps.User,
+      brands: []
     }
+  }
+
+  componentDidMount() {
+    WebSocket.connect(() => WebSocket.subscribe('brands'));
+
+    var observer = WebSocket.observe('brands');
+
+    observer.added = () => this.updateSet(Util.cloneDeep(Util.values(WebSocket.collections.brands)));
+    observer.changed = () => this.updateSet(Util.cloneDeep(Util.values(WebSocket.collections.brands)));
+    observer.removed = () => this.updateSet(Util.cloneDeep(Util.values(WebSocket.collections.brands)));
+  }
+
+  updateSet(rows) {
+    this.setState({
+      brands: rows
+    });
+  }
+
+  handleSignup() {
+    WebSocket.signUpWithEmail(this.state, (err, res) => {
+      console.log(err)
+      if (res) {
+        this.props.navigator.jumpTo(Routes.Main)
+      }
+    })
+  }
+
+  setUser(state) {
+    this.setState({user: state});
+  }
+
+  setVehicle(state) {
+    this.setState({vehicle: state});
   }
 
   configureScene(route) {
@@ -39,7 +75,11 @@ class Signup extends React.Component {
     return (
       <Navigator
           parent={this.props.navigator}
+          listBrands={this.state.brands}
           renderScene={this.renderScene}
+          setUser={(state) => this.setUser(state)}
+          setVehicle={(state) => this.setVehicle(state)}
+          handleSignup={() => this.handleSignup()}
           initialRoute={this.state.initialRoute}
           initialRouteStack={Steps.Stack}
           configureScene={this.configureScene}/>
@@ -54,6 +94,7 @@ class User extends React.Component {
   }
 
   handleVehicle() {
+    this.props.steps.props.setUser(this.state);
     this.props.steps.jumpTo(Steps.Vehicle)
   }
 
@@ -76,42 +117,50 @@ class User extends React.Component {
           <View style={styles.row}>
             <Icon name="person-outline" style={styles.icon} />
             <TextInput 
+              ref="name"
               style={styles.input}
-              placeholder="Nome Completo"
               maxLength={100}
+              onChangeText={(name) => this.setState({name: name})}
+              placeholder="Nome Completo"
               placeholderTextColor="#FFF" />
           </View>
           <View style={styles.row}>
             <Icon name="phonelink-ring" style={styles.icon} />
             <TextInput 
+              ref="phone"
               style={styles.input}
-              keyboardType="phone-pad"
               maxLength={11}
+              keyboardType="phone-pad"
+              onChangeText={(phone) => this.setState({phone: phone})}
               placeholder="Número de Celular"
               placeholderTextColor="#FFF" />
           </View>
           <View style={styles.row}>
             <Icon name="mail-outline" style={styles.icon} />
             <TextInput 
+              ref="email"
               style={styles.input}
               maxLength={100}
               keyboardType="email-address"
+              onChangeText={(email) => this.setState({email: email})}
               placeholder="Email"
               placeholderTextColor="#FFF" />
           </View>
           <View style={styles.row}>
             <Icon name="lock-outline" style={styles.icon} />
             <TextInput
+              ref="password"
               password={true}
               style={styles.input}
               maxLength={14}
+              onChangeText={(password) => this.setState({password: password})}
               placeholder="Senha"
               placeholderTextColor="#FFF" />
           </View>
         </View>
         <TouchableHighlight onPress={this.handleVehicle.bind(this)} underlayColor="transparent">
           <View style={styles.button}>
-            <Text style={styles.white}>CADASTRAR</Text>
+            <Text style={styles.white}>Cadastrar</Text>
           </View>
         </TouchableHighlight>
         <View style={styles.footer}>
@@ -131,51 +180,68 @@ class Vehicle extends React.Component {
     this.state = {}
   }
 
+  handleSignup() {
+    this.props.steps.props.setVehicle(this.state);
+    this.props.steps.props.handleSignup();
+  }
+
   handleUser() {
     this.props.steps.jumpTo(Steps.User)
   }
 
+  listBrands() {
+    let brands = [];
+    if (this.props.steps.props.listBrands.length > 0) {
+      for (var i in this.props.steps.props.listBrands) {
+        brands.push({
+          key: this.props.steps.props.listBrands[i]._id,
+          label: this.props.steps.props.listBrands[i].name
+        })
+      }      
+    }
+    return brands;
+  }
+
+  listModels() {
+    let brands = [];
+    if (this.props.steps.props.listBrands.length > 0) {
+      for (var i in this.props.steps.props.listBrands) {
+        brands.push({
+          key: this.props.steps.props.listBrands[i]._id,
+          label: this.props.steps.props.listBrands[i].name
+        })
+      }      
+    }
+    return brands;
+  }
+
   render() {
     let index = 0;
-    const data = [
-      { key: index++, label: 'Red Apples' },
-      { key: index++, label: 'Cherries' },
-      { key: index++, label: 'Cranberries' },
-      { key: index++, label: 'Pink Grapefruit' },
-      { key: index++, label: 'Raspberries' },
-      { key: index++, label: 'Rhubarb' },
-      { key: index++, label: 'Red Apples' },
-      { key: index++, label: 'Cherries' },
-      { key: index++, label: 'Cranberries' },
-      { key: index++, label: 'Pink Grapefruit' },
-      { key: index++, label: 'Raspberries' },
-      { key: index++, label: 'Rhubarb' },
-      { key: index++, label: 'Red Apples' },
-      { key: index++, label: 'Cherries' },
-      { key: index++, label: 'Cranberries' },
-      { key: index++, label: 'Pink Grapefruit' },
-      { key: index++, label: 'Raspberries' },
-      { key: index++, label: 'Rhubarb' },
-      { key: index++, label: 'Red Apples' },
-      { key: index++, label: 'Cherries' },
-      { key: index++, label: 'Cranberries' },
-      { key: index++, label: 'Pink Grapefruit' },
-      { key: index++, label: 'Raspberries' },
-      { key: index++, label: 'Rhubarb' },
-      { key: index++, label: 'Red Apples' },
-      { key: index++, label: 'Cherries' },
-      { key: index++, label: 'Cranberries' },
-      { key: index++, label: 'Pink Grapefruit' },
-      { key: index++, label: 'Raspberries' },
-      { key: index++, label: 'Rhubarb' },
-      { key: index++, label: 'Red Apples' },
-      { key: index++, label: 'Cherries' },
-      { key: index++, label: 'Cranberries' },
-      { key: index++, label: 'Pink Grapefruit' },
-      { key: index++, label: 'Raspberries' },
-      { key: index++, label: 'Rhubarb' },
-      { key: index++, label: 'Tomatoes' }
+    const companies = [
+      { key: index++, label: 'FIAT' },
+      { key: index++, label: 'Chevrolet' },
+      { key: index++, label: 'Audi' },
+      { key: index++, label: 'BMW' }
     ];
+    
+    index = 0;
+    const cars = [
+      { key: index++, label: 'FIAT - Palio' },
+      { key: index++, label: 'Chevrolet - Cruze' },
+      { key: index++, label: 'Audi - A4' },
+      { key: index++, label: 'BMW - 320i' }
+    ];
+
+    index = 0;
+    const fuel = [
+      { key: index++, label: 'Flex' },
+      { key: index++, label: 'Gasolina ' },
+      { key: index++, label: 'Alcool' },
+      { key: index++, label: 'Diesel' },
+      { key: index++, label: 'GNV' }
+    ];
+    console.log(this.listBrands());
+    //this.listModels(1);
 
     return (
       <View style={styles.container}>
@@ -186,53 +252,66 @@ class Vehicle extends React.Component {
         <View style={styles.form}>
           <View style={styles.row}>
             <ModalPicker
-              data={data}
-              onChange={(option)=>{this.setState({textInputValue:option.label})}}>
+              data={this.listBrands()}
+              onChange={(option)=>{this.setState({brand: option.label})}}>
               <Icon name="directions-car" style={styles.icon} />
               <TextInput
+                ref="brand"
                 editable={false}
                 style={styles.select}
+                value={this.state.brand}
                 placeholder="Marca do veículo"/>
             </ModalPicker>
           </View>
           <View style={styles.row}>
             <ModalPicker
-              data={data}
-              onChange={(option)=>{this.setState({textInputValue:option.label})}}>
+              data={cars}
+              onChange={(option)=>{this.setState({model: option.label})}}>
               <Icon name="event-seat" style={styles.icon} />
               <TextInput
+                ref="model"
                 editable={false}
                 style={styles.select}
+                value={this.state.model}
                 placeholder="Modelo do veículo"/>
             </ModalPicker>
           </View>
           <View style={styles.row}>            
-            <ModalPicker
-              data={data}
-              onChange={(option)=>{this.setState({textInputValue:option.label})}}>
-              <Icon name="date-range" style={styles.icon} />
-              <TextInput
-                editable={false}
-                style={styles.select}
-                placeholder="Ano de fabricação"/>
-            </ModalPicker>
+            <Icon name="date-range" style={styles.icon} />
+            <TextInput 
+              ref="year"
+              style={styles.input}
+              keyboardType="numeric"
+              maxLength={4}
+              placeholder="Ano de fabricação"
+              value={this.state.year}
+              onChangeText={(year) => this.setState({year: year})}
+              placeholderTextColor="#FFF" />
           </View>
           <View style={styles.row}>
             <ModalPicker
-              data={data}
-              onChange={(option)=>{this.setState({textInputValue:option.label})}}>
+              data={fuel}
+              onChange={(option)=>{this.setState({fuel: option.label})}}>
               <Icon name="local-gas-station" style={styles.icon} />
               <TextInput
+                ref="fuel"
                 editable={false}
                 style={styles.select}
+                value={this.state.fuel}
                 placeholder="Tipo de combustível"/>
             </ModalPicker>
           </View>
         </View>
-        <View style={styles.button}>
-          <Text style={styles.white}>ENTRAR</Text>
-        </View>
+        <TouchableHighlight onPress={this.handleSignup.bind(this)} underlayColor="transparent">
+          <View style={styles.button}>
+            <Text style={styles.white}>Entrar</Text>
+          </View>
+        </TouchableHighlight>
         <View style={styles.footer}>
+          <Text style={styles.gray}>Corrigir dados pessoais?</Text>
+          <TouchableHighlight onPress={this.handleUser.bind(this)} underlayColor="transparent">
+            <Text style={styles.white}> Voltar</Text>
+          </TouchableHighlight>      
         </View>
       </View>
     )

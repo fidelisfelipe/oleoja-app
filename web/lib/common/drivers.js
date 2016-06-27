@@ -1,1 +1,0 @@
-Drivers = new Meteor.Collection('drivers');

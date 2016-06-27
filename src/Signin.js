@@ -3,7 +3,8 @@ var {StyleSheet, Text, TextInput, Image, Dimensions, TouchableHighlight, AsyncSt
 var {createAnimatableComponent, View} = require('react-native-animatable');
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var Routes = require('./components/Routes')
-var WebSocket = require('./components/WebSocket')
+
+import WebSocket from './components/WebSocket'
 
 class Signin extends React.Component {
   constructor(props) {
@@ -26,8 +27,8 @@ class Signin extends React.Component {
   handleSignin() {
     let {email, password} = this.state;
     
-    WebSocket.default.loginWithEmail(email, password, (err, res) => {
-      WebSocket.default.onAuthResponse(err, res);
+    WebSocket.loginWithEmail(email, password, (err, res) => {
+      WebSocket.onAuthResponse(err, res);
       if (res) {
         this.props.navigator.jumpTo(Routes.Main)
       }
