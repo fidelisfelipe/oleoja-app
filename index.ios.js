@@ -24,7 +24,10 @@ class Index extends React.Component {
   componentWillMount() {
     WebSocket.connect((err, wasReconnect) => {
       let connected = true;
-      if (err) connected = false;
+      if (err) {
+        connected = false;
+        console.log(err);
+      }
       this.setState({ connected: connected });
     });
 

@@ -22,20 +22,6 @@ WebSocket.loginWithEmail = (email, password, cb) => {
   return WebSocket.call("login", [params], cb)
 }
 
-WebSocket.onAuthResponse = (err, res) => {
-  if (res) {
-    let { id, token, tokenExpires } = res;
-    AsyncStorage.setItem('userId', id.toString());
-    AsyncStorage.setItem('loginToken', token.toString());
-    AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
-    WebSocket.getUser(id.toString(), (err, res) => {
-      AsyncStorage.setItem('user', JSON.stringify(res));
-    })
-  } else {
-    AsyncStorage.multiRemove(['user', 'userId', 'loginToken', 'loginTokenExpires']);
-  }
-}
-
 WebSocket.loginWithToken = (loginToken, cb) => {
   let params = { resume: loginToken };
   return WebSocket.call("login", [params], cb)

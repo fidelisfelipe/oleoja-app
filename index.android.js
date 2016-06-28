@@ -3,10 +3,10 @@ var {AppRegistry, View, Navigator, Dimensions, AsyncStorage} = require('react-na
 var Routes = require('./src/components/Routes');
 var Spinner = require('react-native-spinkit');
 
-import Main from './src/Main'
-import Signin from './src/Signin'
-import Signup from './src/Signup'
-import Forget from './src/Forget'
+var Main = require ('./src/Main');
+var Signin = require('./src/Signin');
+var Signup = require('./src/Signup');
+var Forget = require('./src/Forget');
 
 import WebSocket from './src/components/WebSocket';
 

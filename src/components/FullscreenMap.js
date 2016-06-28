@@ -36,14 +36,14 @@ class Map extends React.Component {
 
     for (var i in this.state.markers) {
       let marker = this.state.markers[i];
-          drivers.push(
-            <MapView.Marker 
-              coordinate={{latitude: parseFloat(marker.latitude), longitude: parseFloat(marker.longitude)}} 
-              title={marker.name} 
-              description={marker.email}/>
-          )
+      drivers.push(
+        <MapView.Marker 
+          coordinate={{latitude: parseFloat(marker.latitude), longitude: parseFloat(marker.longitude)}} 
+          title={marker.name} 
+          image={require('../images/pin.png')}
+          description={marker.email}/>
+      )
     }
-
     return drivers
   }
 

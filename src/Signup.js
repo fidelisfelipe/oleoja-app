@@ -1,5 +1,5 @@
 var React = require('react');
-var {StyleSheet, View, Navigator, Text, TextInput, Image, Dimensions, TouchableHighlight} = require('react-native');
+var {StyleSheet, View, Navigator, Text, TextInput, Image, Alert, Dimensions, AsyncStorage, TouchableHighlight} = require('react-native');
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var Util = require('lodash');
 var Routes = require('./components/Routes');
@@ -33,20 +33,27 @@ class Signup extends React.Component {
   }
 
   handleSignup() {
+    console.log(this.state)
     WebSocket.signUpWithEmail(this.state, (err, res) => {
-      console.log(err)
-      if (res) {
-        this.props.navigator.jumpTo(Routes.Main)
+      if (err && err.reason) {
+        Alert.alert('Ops!', err.reason, [{text: 'OK'}])
+      } else {
+        WebSocket.loginWithEmail(this.state.user.email, this.state.user.password, (err, res) => {
+          if (res) {
+            let { id, token, tokenExpires } = res;
+            AsyncStorage.setItem('userId', id.toString());
+            AsyncStorage.setItem('loginToken', token.toString());
+            AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
+            WebSocket.getUser(id.toString(), (err, res) => {
+              AsyncStorage.setItem('user', JSON.stringify(res));
+              this.props.navigator.jumpTo(Routes.Main)
+            })
+          } else {
+            AsyncStorage.multiRemove(['user', 'userId', 'loginToken', 'loginTokenExpires']);
+          }
+        })
       }
     })
-  }
-
-  setUser(state) {
-    this.setState({user: state});
-  }
-
-  setVehicle(state) {
-    this.setState({vehicle: state});
   }
 
   configureScene(route) {
@@ -77,9 +84,7 @@ class Signup extends React.Component {
           parent={this.props.navigator}
           listBrands={this.state.brands}
           renderScene={this.renderScene}
-          setUser={(state) => this.setUser(state)}
-          setVehicle={(state) => this.setVehicle(state)}
-          handleSignup={() => this.handleSignup()}
+          handleSignup={this.handleSignup}
           initialRoute={this.state.initialRoute}
           initialRouteStack={Steps.Stack}
           configureScene={this.configureScene}/>
@@ -94,7 +99,7 @@ class User extends React.Component {
   }
 
   handleVehicle() {
-    this.props.steps.props.setUser(this.state);
+    console.log(this.state)
     this.props.steps.jumpTo(Steps.Vehicle)
   }
 
@@ -177,72 +182,68 @@ class User extends React.Component {
 class Vehicle extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      brands: [],
+      models: []
+    }
   }
 
   handleSignup() {
-    this.props.steps.props.setVehicle(this.state);
     this.props.steps.props.handleSignup();
   }
 
   handleUser() {
+    console.log(this.state)
     this.props.steps.jumpTo(Steps.User)
   }
 
-  listBrands() {
-    let brands = [];
-    if (this.props.steps.props.listBrands.length > 0) {
-      for (var i in this.props.steps.props.listBrands) {
-        brands.push({
-          key: this.props.steps.props.listBrands[i]._id,
-          label: this.props.steps.props.listBrands[i].name
-        })
-      }      
-    }
-    return brands;
-  }
-
-  listModels() {
-    let brands = [];
-    if (this.props.steps.props.listBrands.length > 0) {
-      for (var i in this.props.steps.props.listBrands) {
-        brands.push({
-          key: this.props.steps.props.listBrands[i]._id,
-          label: this.props.steps.props.listBrands[i].name
-        })
-      }      
-    }
-    return brands;
-  }
-
-  render() {
+  listFuels() {
     let index = 0;
-    const companies = [
-      { key: index++, label: 'FIAT' },
-      { key: index++, label: 'Chevrolet' },
-      { key: index++, label: 'Audi' },
-      { key: index++, label: 'BMW' }
-    ];
-    
-    index = 0;
-    const cars = [
-      { key: index++, label: 'FIAT - Palio' },
-      { key: index++, label: 'Chevrolet - Cruze' },
-      { key: index++, label: 'Audi - A4' },
-      { key: index++, label: 'BMW - 320i' }
-    ];
 
-    index = 0;
-    const fuel = [
+    let fuels = [
       { key: index++, label: 'Flex' },
       { key: index++, label: 'Gasolina ' },
       { key: index++, label: 'Alcool' },
       { key: index++, label: 'Diesel' },
       { key: index++, label: 'GNV' }
     ];
-    console.log(this.listBrands());
-    //this.listModels(1);
 
+    return fuels;
+  }
+
+  listBrands() {
+    let brands = [];
+    
+    if (this.props.steps.props.listBrands.length > 0) {
+      for (var i in this.props.steps.props.listBrands) {
+        brands.push({
+          key: this.props.steps.props.listBrands[i]._id,
+          label: this.props.steps.props.listBrands[i].name
+        })
+      }
+    }
+    return brands;
+  }
+
+  listModels(brand) {
+    let models = [];
+
+    if (this.props.steps.props.listBrands.length > 0) {
+      for (var i in this.props.steps.props.listBrands) {
+        if (this.props.steps.props.listBrands[i].name == brand) {
+          for (var j in this.props.steps.props.listBrands[i].models) {
+            models.push({
+              key: this.props.steps.props.listBrands[i].models[j].name,
+              label: this.props.steps.props.listBrands[i].models[j].name
+            })
+          }
+        }
+      }
+    }
+    return models;
+  }
+
+  render() {
     return (
       <View style={styles.container}>
         <Image style={styles.background} source={require("./images/Background.jpg")} />
@@ -265,7 +266,7 @@ class Vehicle extends React.Component {
           </View>
           <View style={styles.row}>
             <ModalPicker
-              data={cars}
+              data={this.listModels(this.state.brand)}
               onChange={(option)=>{this.setState({model: option.label})}}>
               <Icon name="event-seat" style={styles.icon} />
               <TextInput
@@ -290,7 +291,7 @@ class Vehicle extends React.Component {
           </View>
           <View style={styles.row}>
             <ModalPicker
-              data={fuel}
+              data={this.listFuels()}
               onChange={(option)=>{this.setState({fuel: option.label})}}>
               <Icon name="local-gas-station" style={styles.icon} />
               <TextInput

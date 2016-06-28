@@ -28,9 +28,17 @@ class Signin extends React.Component {
     let {email, password} = this.state;
     
     WebSocket.loginWithEmail(email, password, (err, res) => {
-      WebSocket.onAuthResponse(err, res);
       if (res) {
-        this.props.navigator.jumpTo(Routes.Main)
+        let { id, token, tokenExpires } = res;
+        AsyncStorage.setItem('userId', id.toString());
+        AsyncStorage.setItem('loginToken', token.toString());
+        AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
+        WebSocket.getUser(id.toString(), (err, res) => {
+          AsyncStorage.setItem('user', JSON.stringify(res));
+          this.props.navigator.jumpTo(Routes.Main)
+        })
+      } else {
+        AsyncStorage.multiRemove(['user', 'userId', 'loginToken', 'loginTokenExpires']);
       }
     })
 
