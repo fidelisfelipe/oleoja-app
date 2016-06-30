@@ -1,11 +1,12 @@
 var React = require('react');
 var {ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions} = require('react-native');
 var Icon = require('react-native-vector-icons/MaterialIcons');
-var WebSocket = require('./WebSocket');
+var Oleoja = require('../api/Oleoja');
 var Routes = require('./Routes')
 
 class Menu extends React.Component {
   constructor(props) {
+    console.log('_construct: Menu')
     super(props)
     this.state = {
       opacity: 0
@@ -17,7 +18,7 @@ class Menu extends React.Component {
   }
 
   handleLogout() {
-    WebSocket.default.logout((err, res) => {
+    Oleoja.logout((err, res) => {
       this.props.navigator.jumpTo(Routes.Signin)
     })
   } 
@@ -25,7 +26,7 @@ class Menu extends React.Component {
   componentDidMount() {
     setTimeout(() => { 
       this.setState({opacity: 1})
-    }, 1000);
+    }, 1500);
   }
 
   render() {
@@ -54,28 +55,21 @@ class Menu extends React.Component {
   	        </View>
     	    </TouchableOpacity>
 
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("payment")}>
+	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("history")}>
 	        	<View style={menuItem}>
   	        	<Icon name="slow-motion-video" style={menuIcon} />
   	        	<Text style={menuText}>HISTÓRICO</Text>
   	        </View>
     	    </TouchableOpacity>
 
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("payment")}>
+	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("help")}>
 	        	<View style={menuItem}>
   	        	<Icon name="help-outline" style={menuIcon} />
   	        	<Text style={menuText}>AJUDA</Text>
   	        </View>
     	    </TouchableOpacity>
 
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("payment")}>
-	        	<View style={menuItem}>
-  	        	<Icon name="settings" style={menuIcon} />
-  	        	<Text style={menuText}>CONFIGURAÇÕES</Text>
-  	        </View>
-    	    </TouchableOpacity>
-
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("payment")}>
+	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("about")}>
 	        	<View style={menuItem}>
   	        	<Icon name="people-outline" style={menuIcon} />
   	        	<Text style={menuText}>SOBRE</Text>
@@ -95,4 +89,4 @@ class Menu extends React.Component {
   }
 }
 
-export default Menu
+module.exports = Menu

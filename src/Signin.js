@@ -2,12 +2,12 @@ var React = require('react');
 var {StyleSheet, Text, TextInput, Image, Dimensions, TouchableHighlight, AsyncStorage} = require('react-native');
 var {createAnimatableComponent, View} = require('react-native-animatable');
 var Icon = require('react-native-vector-icons/MaterialIcons');
-var Routes = require('./components/Routes')
-
-import WebSocket from './components/WebSocket'
+var Routes = require('./components/Routes');
+var Oleoja = require('./api/Oleoja');
 
 class Signin extends React.Component {
   constructor(props) {
+    console.log('_construct: Signin')
     super(props)
     this.state = {
       email: '',
@@ -27,13 +27,13 @@ class Signin extends React.Component {
   handleSignin() {
     let {email, password} = this.state;
     
-    WebSocket.loginWithEmail(email, password, (err, res) => {
+    Oleoja.loginWithEmail(email, password, (err, res) => {
       if (res) {
         let { id, token, tokenExpires } = res;
         AsyncStorage.setItem('userId', id.toString());
         AsyncStorage.setItem('loginToken', token.toString());
         AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
-        WebSocket.getUser(id.toString(), (err, res) => {
+        Oleoja.getUser(id.toString(), (err, res) => {
           AsyncStorage.setItem('user', JSON.stringify(res));
           this.props.navigator.jumpTo(Routes.Main)
         })
@@ -110,4 +110,4 @@ class Signin extends React.Component {
   }
 }
 
-export default Signin
+module.exports = Signin

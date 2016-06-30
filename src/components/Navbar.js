@@ -17,9 +17,11 @@ class Navbar extends React.Component {
       justifyContent: 'center',
       alignItems: 'center',
     }
+
     var textStyle = {
       fontFamily: 'Nonserif',
-      fontSize: 18
+      fontSize: this.props.modal ? 16 : 18,
+      fontWeight: this.props.modal ? '900' : '100',
     }
     return (
       <View style={style}>
@@ -29,4 +31,4 @@ class Navbar extends React.Component {
   }
 }
 
-export default Navbar
+module.exports = Navbar

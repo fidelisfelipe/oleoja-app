@@ -68,4 +68,4 @@ ToggleItem.defaultProps = {
   onPress: () => {},
 }
 
-export default ToggleItem
+module.exports = ToggleItem

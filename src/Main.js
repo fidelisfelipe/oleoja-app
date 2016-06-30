@@ -2,12 +2,16 @@ var React = require('react');
 var {Text, View, Modal, TouchableHighlight, AsyncStorage} = require('react-native');
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var SideMenu = require('react-native-side-menu');
-
-import Menu from './components/Menu';
-import Location from './Location';
+var Menu =require('./components/Menu');
+var Location = require('./Location');
+var Payment = require('./Payment');
+var History = require('./History');
+var About = require('./About');
+var Help = require('./Help');
 
 class Main extends React.Component {
   constructor(props) {
+    console.log('_construct: Main')
     super(props)
     this.state = {
       isOpen: false,
@@ -27,7 +31,7 @@ class Main extends React.Component {
     });
   }
   
-  componentDidMount() {
+  componentWillMount() {
     AsyncStorage.getItem('user').then((response) => {
       if (response) {
         let user = JSON.parse(response);
@@ -47,8 +51,6 @@ class Main extends React.Component {
           return <History onRequestClose={() => this.setState({modal: false})}/>
         case 'help':
           return <Help onRequestClose={() => this.setState({modal: false})}/>
-        case 'settings':
-          return <Settings onRequestClose={() => this.setState({modal: false})}/>
         case 'about':
           return <About onRequestClose={() => this.setState({modal: false})}/>
       }      
@@ -72,7 +74,7 @@ class Main extends React.Component {
 
     return (
       <SideMenu menu={menu} isOpen={this.state.isOpen} bounceBackOnOverdraw={true} onChange={(isOpen) => this.updateMenuState(isOpen)}>
-        <Location onPressMenu={this.toggleMenu}/>
+        <Location onPressMenu={this.toggleMenu.bind(this)} user={this.state.user}/>
         <Modal
           animationType="slide"
           transparent={false}
@@ -85,4 +87,4 @@ class Main extends React.Component {
   }
 }
 
-export default Main
+module.exports = Main

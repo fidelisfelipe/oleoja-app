@@ -3,12 +3,14 @@ var {StyleSheet, View, Navigator, Text, TextInput, Image, Alert, Dimensions, Asy
 var Icon = require('react-native-vector-icons/MaterialIcons');
 var Util = require('lodash');
 var Routes = require('./components/Routes');
+var Oleoja = require('./api/Oleoja');
 
 import ModalPicker from 'react-native-modal-picker';
-import WebSocket from './components/WebSocket';
 
 class Signup extends React.Component {
   constructor(props) {
+    console.log('_construct: Signup')
+    AsyncStorage.multiRemove(['userState', 'vehicleState'])
     super(props)
     this.state = {
       initialRoute: Steps.User,
@@ -17,13 +19,13 @@ class Signup extends React.Component {
   }
 
   componentDidMount() {
-    WebSocket.connect(() => WebSocket.subscribe('brands'));
+    Oleoja.subscribe('brands');
 
-    var observer = WebSocket.observe('brands');
+    var observer = Oleoja.observe('brands');
 
-    observer.added = () => this.updateSet(Util.cloneDeep(Util.values(WebSocket.collections.brands)));
-    observer.changed = () => this.updateSet(Util.cloneDeep(Util.values(WebSocket.collections.brands)));
-    observer.removed = () => this.updateSet(Util.cloneDeep(Util.values(WebSocket.collections.brands)));
+    observer.added = () => this.updateSet(Util.cloneDeep(Util.values(Oleoja.collections.brands)));
+    observer.changed = () => this.updateSet(Util.cloneDeep(Util.values(Oleoja.collections.brands)));
+    observer.removed = () => this.updateSet(Util.cloneDeep(Util.values(Oleoja.collections.brands)));
   }
 
   updateSet(rows) {
@@ -33,27 +35,33 @@ class Signup extends React.Component {
   }
 
   handleSignup() {
-    console.log(this.state)
-    WebSocket.signUpWithEmail(this.state, (err, res) => {
-      if (err && err.reason) {
-        Alert.alert('Ops!', err.reason, [{text: 'OK'}])
-      } else {
-        WebSocket.loginWithEmail(this.state.user.email, this.state.user.password, (err, res) => {
-          if (res) {
-            let { id, token, tokenExpires } = res;
-            AsyncStorage.setItem('userId', id.toString());
-            AsyncStorage.setItem('loginToken', token.toString());
-            AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
-            WebSocket.getUser(id.toString(), (err, res) => {
-              AsyncStorage.setItem('user', JSON.stringify(res));
-              this.props.navigator.jumpTo(Routes.Main)
-            })
-          } else {
-            AsyncStorage.multiRemove(['user', 'userId', 'loginToken', 'loginTokenExpires']);
-          }
-        })
-      }
-    })
+    AsyncStorage.multiGet(['userState', 'vehicleState']).then((res) => {
+      let data = {}
+      res.map((result, i, store) => {
+        i == 0 ? (data.user = JSON.parse(result[1])) : (data.vehicle = JSON.parse(result[1]))
+      })
+      Oleoja.signUpWithEmail(data, (err, res) => {
+        if (err && err.reason) {
+          Alert.alert('Ocorreu um Erro!', err.reason, [{text: 'OK'}])
+        } else {
+          Oleoja.loginWithEmail(data.user.email, data.user.password, (err, res) => {
+            if (res) {
+              let { id, token, tokenExpires } = res;
+              AsyncStorage.setItem('userId', id.toString());
+              AsyncStorage.setItem('loginToken', token.toString());
+              AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
+              Oleoja.getUser(id.toString(), (err, res) => {
+                AsyncStorage.multiRemove(['userState', 'vehicleState'])
+                AsyncStorage.setItem('user', JSON.stringify(res));
+                this.props.navigator.jumpTo(Routes.Main)
+              })
+            } else {
+              AsyncStorage.multiRemove(['user', 'userId', 'loginToken', 'loginTokenExpires']);
+            }
+          })
+        }
+      })
+    }).done()
   }
 
   configureScene(route) {
@@ -99,7 +107,7 @@ class User extends React.Component {
   }
 
   handleVehicle() {
-    console.log(this.state)
+    AsyncStorage.setItem('userState', JSON.stringify(this.state));
     this.props.steps.jumpTo(Steps.Vehicle)
   }
 
@@ -189,11 +197,11 @@ class Vehicle extends React.Component {
   }
 
   handleSignup() {
+    AsyncStorage.setItem('vehicleState', JSON.stringify(this.state));
     this.props.steps.props.handleSignup();
   }
 
   handleUser() {
-    console.log(this.state)
     this.props.steps.jumpTo(Steps.User)
   }
 
@@ -346,4 +354,4 @@ var styles = StyleSheet.create({
   footer: {flexDirection: 'row', padding: 20, justifyContent: 'center', alignItems: 'center', flex: .15}
 })
 
-export default Signup
+module.exports = Signup

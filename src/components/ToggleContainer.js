@@ -61,4 +61,4 @@ ToggleContainer.defaultProps = {
   style: {},
 }
 
-export default ToggleContainer
+module.exports = ToggleContainer

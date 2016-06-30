@@ -1,13 +1,12 @@
 var React = require('react');
 var Spinner = require('react-native-spinkit');
 var {AppRegistry, View, Navigator, Dimensions, AsyncStorage} = require('react-native');
-
-import WebSocket from './src/components/WebSocket';
-import Routes from './src/components/Routes'
-import Signin from './src/Signin'
-import Signup from './src/Signup'
-import Forget from './src/Forget'
-import Main from './src/Main'
+var Routes = require('./src/components/Routes');
+var Signin = require('./src/Signin');
+var Signup = require('./src/Signup');
+var Forget = require('./src/Forget');
+var Main = require('./src/Main');
+var Oleoja = require('./src/api/Oleoja');
 
 class Index extends React.Component {
   constructor(props) {
@@ -22,18 +21,14 @@ class Index extends React.Component {
   }
 
   componentWillMount() {
-    WebSocket.connect((err, wasReconnect) => {
+    Oleoja.connect((err, wasReconnect) => {
       let connected = true;
       if (err) {
         connected = false;
-        console.log(err);
       }
       this.setState({ connected: connected });
     });
 
-    /*
-     *  Retornar initialRoute padrao para [1]
-     */
 		setTimeout(() => { 
     	AsyncStorage.getItem('user').then((response) => {
 	      if (response) {

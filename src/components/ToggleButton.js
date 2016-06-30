@@ -69,4 +69,4 @@ ToggleButton.defaultProps = {
   onChange: () => {},
 }
 
-export default ToggleButton
+module.exports = ToggleButton

@@ -4,6 +4,7 @@ var Icon = require('react-native-vector-icons/MaterialIcons');
 
 class LocationPin extends React.Component {
   constructor(props) {
+    console.log('_construct: LocationPin')
     super(props)
     this.state = {}
   }
@@ -16,7 +17,7 @@ class LocationPin extends React.Component {
     let left = (Dimensions.get('window').width / 2) - 70
     let style = {borderRadius: 25, backgroundColor: backgroundColor, left: left, top: top, height: 21, position: 'absolute', flex: 1, flexDirection: 'row', alignItems: 'center', padding: 15}
     let textStyle = {fontSize: 16, color: this.props.textColor || 'white', backgroundColor: 'transparent', fontWeight: "400", alignItems: 'flex-start'}
-    let iconStyle = {fontSize: 28, fontWeight: "bold", color: this.props.textColor || 'white', alignItems: 'flex-end', marginLeft: 5, marginRight: -12}
+    let iconStyle = {fontSize: 24, fontWeight: "bold", color: this.props.textColor || 'white', alignItems: 'flex-end', marginLeft: 5, marginRight: -12}
     let nubStyle = {width: 3, height: 20, backgroundColor: backgroundColor, top: top + 22, left: left + 78, position: 'absolute'}
     
     return (
@@ -25,7 +26,7 @@ class LocationPin extends React.Component {
           <View style={style}>
             <Text style={textStyle}>{this.props.text || ""}</Text>
             <TouchableHighlight underlayColor="transparent" onPress={this.props.onPress}>
-              <Icon name="play-circle-outline" style={iconStyle} />
+              <Icon name={this.props.icon} style={iconStyle} />
             </TouchableHighlight>
           </View>
           <View style={nubStyle}></View>
@@ -35,4 +36,4 @@ class LocationPin extends React.Component {
   }
 }
 
-export default LocationPin
+module.exports = LocationPin

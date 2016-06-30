@@ -2,11 +2,11 @@ var React = require('react');
 var {Text, View, MapView, Dimensions, ListView} = require('react-native');
 var MapView = require('react-native-maps');
 var Util = require('lodash');
-
-import WebSocket from './WebSocket'
+var Oleoja = require('../api/Oleoja');
 
 class Map extends React.Component {
   constructor(props) {
+    console.log('_construct: Map')
     super(props)
     this.state = {
       markers: [],
@@ -15,13 +15,13 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    WebSocket.connect(() => WebSocket.subscribe('drivers'));
+    Oleoja.subscribe('drivers');
 
-    var observer = WebSocket.observe('drivers');
+    var observer = Oleoja.observe('drivers');
 
-    observer.added = () => this.updateRows(Util.cloneDeep(Util.values(WebSocket.collections.drivers)));
-    observer.changed = () => this.updateRows(Util.cloneDeep(Util.values(WebSocket.collections.drivers)));
-    observer.removed = () => this.updateRows(Util.cloneDeep(Util.values(WebSocket.collections.drivers)));
+    observer.added = () => this.updateRows(Util.cloneDeep(Util.values(Oleoja.collections.drivers)));
+    observer.changed = () => this.updateRows(Util.cloneDeep(Util.values(Oleoja.collections.drivers)));
+    observer.removed = () => this.updateRows(Util.cloneDeep(Util.values(Oleoja.collections.drivers)));
   }
 
   updateRows(rows) {
@@ -38,6 +38,7 @@ class Map extends React.Component {
       let marker = this.state.markers[i];
       drivers.push(
         <MapView.Marker 
+          key={i}
           coordinate={{latitude: parseFloat(marker.latitude), longitude: parseFloat(marker.longitude)}} 
           title={marker.name} 
           image={require('../images/pin.png')}
@@ -80,4 +81,4 @@ class Map extends React.Component {
   }
 }
 
-export default Map
+module.exports = Map

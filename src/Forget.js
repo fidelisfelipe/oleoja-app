@@ -5,6 +5,7 @@ var Routes = require('./components/Routes')
 
 class Forget extends React.Component {
   constructor(props) {
+    console.log('_construct: Forget')
     super(props)
     this.state = {}
   }
@@ -68,4 +69,4 @@ class Forget extends React.Component {
   }
 }
 
-export default Forget
+module.exports = Forget
