@@ -18,7 +18,7 @@ class Signup extends React.Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     Oleoja.subscribe('brands');
 
     var observer = Oleoja.observe('brands');
@@ -154,6 +154,7 @@ class User extends React.Component {
               ref="email"
               style={styles.input}
               maxLength={100}
+              autoCapitalize="none"
               keyboardType="email-address"
               onChangeText={(email) => this.setState({email: email})}
               placeholder="Email"
@@ -290,7 +291,8 @@ class Vehicle extends React.Component {
             <TextInput 
               ref="year"
               style={styles.input}
-              keyboardType="numeric"
+              //keyboardType="numeric"
+              //returnKeyType='done'
               maxLength={4}
               placeholder="Ano de fabricação"
               value={this.state.year}

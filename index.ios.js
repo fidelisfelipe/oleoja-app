@@ -15,41 +15,49 @@ class Index extends React.Component {
     	connected: false,
     	loggedIn: false,
     	loaded: false,
-    	user: {},
+    	user: {profile: {}},
     	initialRoute: null
     }
   }
 
   componentWillMount() {
     Oleoja.connect((err, wasReconnect) => {
-      let connected = true;
+      let connected = false;
       if (err) {
+        console.log('Meteor Not Connected')
         connected = false;
+      } else {
+        console.log('Meteor Connected')
+        connected = true;
       }
       this.setState({ connected: connected });
     });
 
-		setTimeout(() => { 
-    	AsyncStorage.getItem('user').then((response) => {
-	      if (response) {
-	      	let user = JSON.parse(response);
-		      this.setState({
-		        loggedIn: user._id,
-		        initialRoute: Routes.Stack[0],
-		        loaded: true,
-		        user: user
-		      })      	
-	      } else {
-	 	      this.setState({
-		        loggedIn: null,
-		        initialRoute: Routes.Stack[1],
-		        loaded: true,
-		        user: null
-	  	    })
-	      }
-	    }).done()
+		setTimeout(() => {
+    	this.userWillMount();
     }, 1500);
 	}
+
+  userWillMount() {
+    AsyncStorage.getItem('user').then((response) => {
+      if (response) {
+        let user = JSON.parse(response);
+        this.setState({
+          loggedIn: user._id,
+          initialRoute: Routes.Stack[0],
+          loaded: true,
+          user: user
+        })        
+      } else {
+        this.setState({
+          loggedIn: null,
+          initialRoute: Routes.Stack[1],
+          loaded: true,
+          user: {profile: {}}
+        })
+      }
+    }).done()
+  }
 
   renderScene(route, navigator) {
     switch (route.name) {
@@ -60,7 +68,7 @@ class Index extends React.Component {
       case 'Forget':
         return <Forget navigator={navigator}/>
       case 'Main':
-        return <Main navigator={navigator}/>
+        return <Main navigator={navigator} user={navigator.props.user}/>
       default:
         return <Signin navigator={navigator}/>
     }  
@@ -98,6 +106,8 @@ class Index extends React.Component {
     } else {
 	  	return (
   		  <Navigator
+          user={this.state.user}
+          userWillMount={() => this.userWillMount()}
 	        renderScene={this.renderScene}
 	        initialRoute={this.state.initialRoute}
 	        initialRouteStack={Routes.Stack}

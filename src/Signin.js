@@ -35,10 +35,11 @@ class Signin extends React.Component {
         AsyncStorage.setItem('loginTokenExpires', tokenExpires.toString());
         Oleoja.getUser(id.toString(), (err, res) => {
           AsyncStorage.setItem('user', JSON.stringify(res));
+          this.props.navigator.props.userWillMount()
           this.props.navigator.jumpTo(Routes.Main)
         })
       } else {
-        AsyncStorage.multiRemove(['user', 'userId', 'loginToken', 'loginTokenExpires']);
+        AsyncStorage.multiRemove(['user', 'payments', 'userId', 'loginToken', 'loginTokenExpires']);
       }
     })
 

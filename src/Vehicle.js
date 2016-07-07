@@ -7,39 +7,15 @@ var Routes = require('./components/Routes');
 var Oleoja = require('./api/Oleoja');
 var windowSize = Dimensions.get('window');
 
-class Payment extends React.Component {
+class Vehicle extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: true,
-      initialRoute: Steps.List,
-      payments: []
+      initialRoute: Steps.List
     }
   }
-
-  componentWillMount() {
-    this.paymentsWillMount()
-  }
   
-  paymentsWillMount() {
-    Oleoja.listPayments(this.props.user.services.iugu, (err, res) => {
-      if (res) {
-        AsyncStorage.setItem('payments', JSON.stringify(res));
-        AsyncStorage.getItem('payments').then((response) => {
-          if (response) {
-            let payments = JSON.parse(response);
-            this.setState({
-              payments: payments,
-              loading: false
-            })        
-          }
-        }).done()
-      } else {
-        AsyncStorage.remove('payments');
-      }
-    })
-  }
-
   configureScene(route) {
     var BaseConfig = Navigator.SceneConfigs.PushFromRight;
 
@@ -53,37 +29,32 @@ class Payment extends React.Component {
   
   renderScene(route, navigator) {
     switch (route.name) {
-      case 'PaymentList':
-        return <PaymentList navigator={navigator.props.parent} steps={navigator}/>
-      case 'PaymentForm':
-        return <PaymentForm navigator={navigator.props.parent} steps={navigator}/>
+      case 'VehicleList':
+        return <VehicleList navigator={navigator.props.parent} steps={navigator}/>
+      case 'VehicleForm':
+        return <VehicleForm navigator={navigator.props.parent} steps={navigator}/>
       default:
-        return <PaymentList navigator={navigator.props.parent} steps={navigator}/>
+        return <VehicleList navigator={navigator.props.parent} steps={navigator}/>
     }  
   }
 
   render() {
-    if (this.state.loading) {
-      return (<Loading/>)
-    } else {
-      return (
-        <Navigator
-            user={this.props.user}
-            parent={this.props.navigator}
-            payments={this.state.payments}
-            paymentsWillMount={() => this.paymentsWillMount()}
-            renderScene={this.renderScene}
-            initialRoute={this.state.initialRoute}
-            initialRouteStack={Steps.Stack}
-            configureScene={this.configureScene}
-            onRequestClose={this.props.onRequestClose}>
-        </Navigator>
-      )
-    }
+  	return (
+    	<Navigator
+        	user={this.props.user}
+        	parent={this.props.navigator}
+        	vehicles={this.props.user.profile.vehicles}
+        	renderScene={this.renderScene}
+        	initialRoute={this.state.initialRoute}
+        	initialRouteStack={Steps.Stack}
+        	configureScene={this.configureScene}
+        	onRequestClose={this.props.onRequestClose}>
+    	</Navigator>
+	)
   }
 }
 
-class PaymentList extends React.Component {
+class VehicleList extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -92,43 +63,42 @@ class PaymentList extends React.Component {
     this.props.steps.jumpTo(Steps.Form)
   }
 
-  renderPayments() {
-    let payments = [];
-
-    for (var i in this.props.steps.props.payments) {
-      let payment = this.props.steps.props.payments[i];
-      payments.push(
+  renderVehicles() {
+  	let vehicles = [];
+    for (var i in this.props.steps.props.vehicles) {
+      let vehicle = this.props.steps.props.vehicles[i];
+      vehicles.push(
         <View style={styles.boxInnerStyle} key={i}>
-          <Icon name="credit-card" style={styles.iconStyle} />
+          <Icon name="directions-car" style={styles.iconStyle} />
           <View style={styles.boxTextContainerStyle}>
-            <Text style={styles.textStyle}>{payment.data.display_number}</Text>
+            <Text style={styles.textStyle}>{vehicle.brand.toUpperCase()}</Text>
           </View>
           <TouchableHighlight>
-           <Text style={styles.updateStyle}>{payment.data.brand}</Text>
+           <Text style={styles.updateStyle}>{vehicle.model}</Text>
           </TouchableHighlight>
         </View>
       )
     }
-    return payments
+    return vehicles
   }
 
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Navbar title="FORMAS DE PAGAMENTO" modal={true}/>
+          <Navbar title="MEUS VEÍCULOS" modal={true}/>
           <TouchableHighlight onPress={this.props.steps.props.onRequestClose} underlayColor="transparent" style={styles.close}>
             <Icon name="clear" style={styles.closeIcon} />
           </TouchableHighlight>
         </View>
         <View style={styles.body}>
           <View style={styles.boxStyle}>
-            {this.renderPayments()}
+            {this.renderVehicles()}
             <TouchableHighlight onPress={this.handleForm.bind(this)} underlayColor="transparent">
               <View style={styles.boxInnerStyle}>
                 <Icon name="add" style={styles.iconStyle} />
                 <View style={styles.boxTextContainerStyle}>
-                  <Text style={styles.textStyle}>ADICIONAR PAGAMENTO</Text>
+                  <Text style={styles.textStyle}>ADICIONAR VEÍCULO</Text>
                 </View>
               </View>
             </TouchableHighlight>
@@ -139,7 +109,7 @@ class PaymentList extends React.Component {
   }
 }
 
-class PaymentForm extends React.Component {
+class VehicleForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -156,13 +126,13 @@ class PaymentForm extends React.Component {
 
   handleSave() {
     let data = {}
-    data.user = this.props.steps.props.user._id;
-    data.number = this.state.number;
-    data.name = this.state.name;
-    data.expiration = this.state.expiration;
-    data.cvv = this.state.cvv;
+	    data.user = this.props.steps.props.user._id;
+	    data.number = this.state.number;
+	    data.name = this.state.name;
+	    data.expiration = this.state.expiration;
+	    data.cvv = this.state.cvv;
 
-    Oleoja.savePayment(data, (err, res) => {
+    Oleoja.saveVehicle(data, (err, res) => {
       if (res && res.errors) {
         Alert.alert('Ocorreu um Erro!', res.errors.data.join(''), [{text: 'OK'}])
       } else {
@@ -176,7 +146,7 @@ class PaymentForm extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Navbar title="ADICIONAR PAGAMENTO" modal={true}/>
+          <Navbar title="ADICIONAR VEÍCULO" modal={true}/>
           <TouchableHighlight onPress={this.handleList.bind(this)} underlayColor="transparent" style={styles.close}>
             <Icon name="clear" style={styles.closeIcon} />
           </TouchableHighlight>
@@ -248,8 +218,8 @@ var styles = StyleSheet.create({
 })
 
 var Steps = {
-  List: {"id": 0, "name": "PaymentList"},
-  Form: {"id": 1, "name": "PaymentForm"},
+  List: {"id": 0, "name": "VehicleList"},
+  Form: {"id": 1, "name": "VehicleForm"},
 }
 
 Steps.Stack = [
@@ -257,4 +227,4 @@ Steps.Stack = [
   Steps.Form
 ]
 
-module.exports = Payment
+module.exports = Vehicle

@@ -42,39 +42,46 @@ class Menu extends React.Component {
     let line = {height: 1.2, marginBottom: -10, marginTop: 10, backgroundColor: '#212331'}
 
     return (
-	    <ScrollView style={menu} opacity={this.state.opacity}>
-  	 		<View style={header}>
-   				<Image style={headerImage} source={require('../images/User.png')} />
-   				<Text style={headerText}>{this.props.user.profile.name}</Text>
-   			</View>
-   			<View style={body}>
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("payment")}>
-	        	<View style={menuItem}>
-  	        	<Icon name="card-giftcard" style={menuIcon} />
-  	        	<Text style={menuText}>PAGAMENTO</Text>
-  	        </View>
-    	    </TouchableOpacity>
+      <ScrollView style={menu} opacity={this.state.opacity}>
+        <View style={header}>
+          <Image style={headerImage} source={require('../images/User.png')} />
+          <Text style={headerText}>{this.props.user.profile.name}</Text>
+        </View>
+        <View style={body}>
+          <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("vehicle")}>
+            <View style={menuItem}>
+              <Icon name="directions-car" style={menuIcon} />
+              <Text style={menuText}>VEÍCULOS</Text>
+            </View>
+          </TouchableOpacity>
 
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("history")}>
-	        	<View style={menuItem}>
-  	        	<Icon name="slow-motion-video" style={menuIcon} />
-  	        	<Text style={menuText}>HISTÓRICO</Text>
-  	        </View>
-    	    </TouchableOpacity>
+          <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("payment")}>
+            <View style={menuItem}>
+              <Icon name="card-giftcard" style={menuIcon} />
+              <Text style={menuText}>PAGAMENTO</Text>
+            </View>
+          </TouchableOpacity>
 
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("help")}>
-	        	<View style={menuItem}>
-  	        	<Icon name="help-outline" style={menuIcon} />
-  	        	<Text style={menuText}>AJUDA</Text>
-  	        </View>
-    	    </TouchableOpacity>
+          <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("history")}>
+            <View style={menuItem}>
+              <Icon name="slow-motion-video" style={menuIcon} />
+              <Text style={menuText}>HISTÓRICO</Text>
+            </View>
+          </TouchableOpacity>
 
-	        <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("about")}>
-	        	<View style={menuItem}>
-  	        	<Icon name="people-outline" style={menuIcon} />
-  	        	<Text style={menuText}>SOBRE</Text>
-  	        </View>
-    	    </TouchableOpacity>
+          <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("help")}>
+            <View style={menuItem}>
+              <Icon name="help-outline" style={menuIcon} />
+              <Text style={menuText}>AJUDA</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={menuItem} onPress={() => this.props.onItemSelected("about")}>
+            <View style={menuItem}>
+              <Icon name="people-outline" style={menuIcon} />
+              <Text style={menuText}>SOBRE</Text>
+            </View>
+          </TouchableOpacity>
           
           <View style={line} />
 
@@ -83,7 +90,7 @@ class Menu extends React.Component {
               <Text style={logoutText}>Sair</Text>
             </View>
           </TouchableOpacity>
-    	  </View>
+        </View>
       </ScrollView>
     )
   }
